@@ -6,10 +6,7 @@ import net.objecthunter.exp4j.operator.Operator;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.util.*;
 
 public class FunctionParser {
     private ArrayList<Expression> limitations=new ArrayList<Expression>();
@@ -17,13 +14,26 @@ public class FunctionParser {
     private Operator equalOrLessThan;
     private Operator greaterThan;
     private Operator lessThan;
-    public ArrayList<String> variabes;
+    private Operator equal;
+    public Set<String> variabes= new HashSet<String>();
     private  Expression optimizationFunction;
     private String optimization;
     private String integerOrDouble;
 
 
     {
+        equal= new Operator("=", 2, true, Operator.PRECEDENCE_ADDITION - 1) {
+
+            @Override
+            public double apply(double[] values) {
+                if (values[0] == values[1]) {
+                    return 1d;
+                } else {
+                    return 0d;
+                }
+
+            }
+        };
         equalOrGreaterThan = new Operator(">=", 2, true, Operator.PRECEDENCE_ADDITION - 1) {
 
             @Override
@@ -83,25 +93,25 @@ public class FunctionParser {
         howmany=scanner.nextInt();
         for (int i = 0; i <howmany ; i++) {
             System.out.println("podaj zmienna");
-            answer=scanner.nextLine();
+            answer=scanner.next();
             variabes.add(answer);
         }
         System.out.println("Podaj ilosć ograniczen");
         howmany=scanner.nextInt();
         for (int i = 0; i <howmany ; i++) {
             System.out.println("Podaj funkcje nr "+ (i+1));
-             answer=scanner.nextLine();
+             answer=scanner.next();
             limitations.add(makeFunction(answer));
             saveFunctionsToFile("functions",answer);
 
         }
         System.out.println("Podaj funckje optymalizująca");
-        answer=scanner.nextLine();
+        answer=scanner.next();
         optimizationFunction=makeFunction(answer);
         System.out.println("maks/min");
-        optimization=scanner.nextLine();
+        optimization=scanner.next();
         System.out.println("Integer/Double");
-        integerOrDouble=scanner.nextLine();
+        integerOrDouble=scanner.next();
 
 
     }
@@ -116,10 +126,12 @@ public class FunctionParser {
     }
     private Expression makeFunction(String exp){
         ExpressionBuilder builder= new ExpressionBuilder(exp);
+        builder.variables(variabes);
         if (exp.contains(">=")) builder.operator(equalOrGreaterThan);
         if (exp.contains("<=")) builder.operator(equalOrLessThan);
         if (exp.contains(">")) builder.operator(greaterThan);
         if (exp.contains("<")) builder.operator(lessThan);
+      //  if (exp.contains("=")) builder.operator(equal);
         return builder.build();
 
     }
