@@ -3,13 +3,12 @@ import net.objecthunter.exp4j.Expression;
 import java.awt.geom.Point2D;
 import java.util.*;
 
-public class FunctionSolver {
+public class FunctionSolver<T> {
     private ArrayList<Expression> limitations;
     private Set<String> variables;
     private Random generator = new Random();
     private Expression optimizationFunction;
     private String optimization="max";
-    private String integerOrDouble;
     private HashMap<String, Double> variablesAndDoubleValues=new HashMap<String, Double>();
     private Integer numberOfPoints = 1000000;
     private Double optimalValue=Double.MIN_VALUE;
@@ -19,12 +18,20 @@ public class FunctionSolver {
 
 
     public FunctionSolver(ArrayList<Expression> limitations, Expression optimizationFunction, Set<String> variables,
-                          String optimization, String integerOrDouble) {
+                          String optimization) {
         this.limitations = limitations;
         this.optimizationFunction = optimizationFunction;
         this.variables = variables;
+        this.optimization=optimization;
+        if (optimization.equals("max")){
+            optimalValue=Double.MIN_VALUE;
+            previousOptimalValue=Double.MIN_VALUE;
+        }
+        else {
+            optimalValue=Double.MAX_VALUE;
+            previousOptimalValue=Double.MAX_VALUE;
+        }
 
-        this.integerOrDouble = integerOrDouble;
     }
 
     private Boolean solve( HashMap<String, Double> variables) {
@@ -71,8 +78,8 @@ public class FunctionSolver {
         System.out.println(optimalValue);
         System.out.println("Radius "+radius);
         if (Arrays.equals(newPoint,new Double[newPoint.length])) newPoint=previousPoint;
-        if (optimalValue==Double.MIN_VALUE ) monteCarlo(newPoint,Math.sqrt(radius));
-        if (Math.abs(optimalValue-previousOptimalValue)>=0.0000001) monteCarlo(newPoint,radius/2);
+        if (optimalValue==Double.MIN_VALUE || optimalValue==Double.MAX_VALUE) monteCarlo(newPoint,Math.sqrt(radius));
+        if (Math.abs(optimalValue-previousOptimalValue)>=0.00001) monteCarlo(newPoint,radius/2);
 
 
     }
@@ -82,7 +89,6 @@ public class FunctionSolver {
         if (optimization.equals("min") && value < optimalValue) {
             optimalValue=value;
             this.variablesAndDoubleValues=variables;
-            System.out.println("tat");
             return true;
 
         }

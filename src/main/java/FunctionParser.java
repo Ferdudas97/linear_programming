@@ -18,7 +18,6 @@ public class FunctionParser {
     public Set<String> variabes= new HashSet<String>();
     private  Expression optimizationFunction;
     private String optimization;
-    private String integerOrDouble;
 
 
     {
@@ -110,8 +109,6 @@ public class FunctionParser {
         optimizationFunction=makeFunction(answer);
         System.out.println("maks/min");
         optimization=scanner.next();
-        System.out.println("Integer/Double");
-        integerOrDouble=scanner.next();
 
 
     }
@@ -131,7 +128,6 @@ public class FunctionParser {
         if (exp.contains("<=")) builder.operator(equalOrLessThan);
         if (exp.contains(">")) builder.operator(greaterThan);
         if (exp.contains("<")) builder.operator(lessThan);
-      //  if (exp.contains("=")) builder.operator(equal);
         return builder.build();
 
     }
@@ -148,6 +144,6 @@ public class FunctionParser {
     }
     public FunctionSolver getFunctionSolver(){
 
-        return new FunctionSolver(limitations,optimizationFunction,variabes,optimization,integerOrDouble);
+        return new FunctionSolver(limitations,optimizationFunction,variabes,optimization);
     }
 }
