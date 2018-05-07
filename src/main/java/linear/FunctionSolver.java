@@ -1,6 +1,7 @@
+package linear;
+
 import net.objecthunter.exp4j.Expression;
 
-import java.awt.geom.Point2D;
 import java.util.*;
 
 public class FunctionSolver<T> {
@@ -9,11 +10,12 @@ public class FunctionSolver<T> {
     private Random generator = new Random();
     private Expression optimizationFunction;
     private String optimization="max";
-    private HashMap<String, Double> variablesAndDoubleValues=new HashMap<String, Double>();
+    private HashMap<String, Double> variablesAndValues =new HashMap<String, Double>();
     private Integer numberOfPoints = 1000000;
     private Double optimalValue=Double.MIN_VALUE;
     private Double previousOptimalValue=Double.MIN_VALUE;
-    private Double radius=Math.sqrt(Double.MAX_VALUE);
+    private Double radius=100000000.0;
+    private Double error=0.000001;
 
 
 
@@ -55,7 +57,7 @@ public class FunctionSolver<T> {
         Double point;
         int iterator=0;
         double randomed;
-        if (radius<1) radius=0.99;
+        if (radius<100) radius=9.99;
         previousOptimalValue=optimalValue;
         for (int j = 0; j < numberOfPoints; j++) {
             iterator=0;
@@ -78,8 +80,8 @@ public class FunctionSolver<T> {
         System.out.println(optimalValue);
         System.out.println("Radius "+radius);
         if (Arrays.equals(newPoint,new Double[newPoint.length])) newPoint=previousPoint;
-        if (optimalValue==Double.MIN_VALUE || optimalValue==Double.MAX_VALUE) monteCarlo(newPoint,Math.sqrt(radius));
-        if (Math.abs(optimalValue-previousOptimalValue)>=0.00001) monteCarlo(newPoint,radius/2);
+    //    if (optimalValue==Double.MIN_VALUE || optimalValue==Double.MAX_VALUE ) monteCarlo(newPoint,Math.sqrt(radius));
+        if ((Math.abs(optimalValue-previousOptimalValue)==0 && radius>9.99) ||Math.abs(optimalValue-previousOptimalValue)>=error) monteCarlo(newPoint,radius/2);
 
 
     }
@@ -88,7 +90,7 @@ public class FunctionSolver<T> {
         Double value=optimizationFunction.setVariables(variables).evaluate();
         if (optimization.equals("min") && value < optimalValue) {
             optimalValue=value;
-            this.variablesAndDoubleValues=variables;
+            this.variablesAndValues =variables;
             return true;
 
         }
@@ -96,17 +98,35 @@ public class FunctionSolver<T> {
         if (optimization.equals("max") && value>optimalValue){
             optimalValue=value;
 
-            this.variablesAndDoubleValues=variables;
+            this.variablesAndValues =variables;
             return true;
         }
         return false;
     }
     public void print(){
 
-        for (Map.Entry<String,Double> en:variablesAndDoubleValues.entrySet()) {
+        for (Map.Entry<String,Double> en: variablesAndValues.entrySet()) {
             System.out.println(en.getKey()+":  "+en.getValue());
         }
     }
 
+    public void setError(Double error) {
+        this.error = error;
+    }
 
+    public void setRadius(Double radius) {
+        this.radius = radius;
+    }
+
+    public void setNumberOfPoints(Integer numberOfPoints) {
+        this.numberOfPoints = numberOfPoints;
+    }
+
+    public Double getOptimalValue() {
+        return optimalValue;
+    }
+
+    public HashMap<String, Double> getVariablesAndValues() {
+        return variablesAndValues;
+    }
 }

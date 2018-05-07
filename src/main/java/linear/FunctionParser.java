@@ -1,4 +1,4 @@
-
+package linear;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -15,12 +15,38 @@ public class FunctionParser {
     private Operator greaterThan;
     private Operator lessThan;
     private Operator equal;
+    private Operator and;
+    private Operator or;
     public Set<String> variabes= new HashSet<String>();
     private  Expression optimizationFunction;
     private String optimization;
 
 
     {
+        or= new Operator("|", 2, true, Operator.PRECEDENCE_UNARY_PLUS +1) {
+
+            @Override
+            public double apply(double[] values) {
+                if (values[0]==1d || values[1]==1d) {
+                    return 1d;
+                } else {
+                    return 0d;
+                }
+
+            }
+        };
+        and= new Operator("&", 2, true, Operator.PRECEDENCE_UNARY_PLUS+1) {
+
+            @Override
+            public double apply(double[] values) {
+                if (values[0]==1d & values[1]==1d) {
+                    return 1d;
+                } else {
+                    return 0d;
+                }
+
+            }
+        };
         equal= new Operator("=", 2, true, Operator.PRECEDENCE_ADDITION - 1) {
 
             @Override
@@ -107,7 +133,7 @@ public class FunctionParser {
         System.out.println("Podaj funckje optymalizująca");
         answer=scanner.next();
         optimizationFunction=makeFunction(answer);
-        System.out.println("maks/min");
+        System.out.println("max/min");
         optimization=scanner.next();
 
 
@@ -124,12 +150,31 @@ public class FunctionParser {
     private Expression makeFunction(String exp){
         ExpressionBuilder builder= new ExpressionBuilder(exp);
         builder.variables(variabes);
+        if (exp.contains("&")) builder.operator(and);
+        if (exp.contains("|")) builder.operator(or);
         if (exp.contains(">=")) builder.operator(equalOrGreaterThan);
         if (exp.contains("<=")) builder.operator(equalOrLessThan);
         if (exp.contains(">")) builder.operator(greaterThan);
         if (exp.contains("<")) builder.operator(lessThan);
         return builder.build();
 
+    }
+
+    public void setOptimization(String optimization) {
+        this.optimization = optimization;
+    }
+    public void makeLimitations(String [] limitations){
+        for (int i = 0; i <limitations.length ; i++) {
+            this.limitations.add(makeFunction(limitations[i]));
+        }
+    }
+
+    public void makeOptimizationFunction(String opt) {
+        this.optimizationFunction = makeFunction(opt);
+    }
+
+    public void setVariables(LinkedList<String> variables) {
+       this.variabes.addAll(variables);
     }
 
     public ArrayList<Expression> getFunctions() {
