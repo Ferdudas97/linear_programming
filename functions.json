@@ -1,0 +1,6 @@
+{
+  "variables":["z","x"],
+  "limitations":["16z+24x<=96000","16z+10x<=80000","x>=2z/3","z>=0","z<=3000","x>=0","x<=4000"],
+  "function":"30z+40x",
+  "optimization":"max"
+}

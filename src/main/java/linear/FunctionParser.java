@@ -3,7 +3,12 @@ package linear;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.operator.Operator;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -108,6 +113,38 @@ public class FunctionParser {
         }
     };
     }
+    public void makeFunctionsFromJSON(String path){
+
+        JSONObject jsonObject=parseJSON(path);
+        List<String> var=new LinkedList<>();
+        for (Object obj:(JSONArray)jsonObject.get("variables")) {
+            variabes.add((String)obj);
+            System.out.println((String)obj);
+        }
+        for (Object obj:(JSONArray)jsonObject.get("limitations")) {
+            var.add((String)obj);
+            System.out.println((String)obj);
+
+        }
+        makeLimitations(var);
+
+        makeOptimizationFunction((String)jsonObject.get("function"));
+        setOptimization((String)jsonObject.get("optimization"));
+    }
+        public  JSONObject parseJSON(String path) {
+            JSONParser parser = new JSONParser();
+            Object obj = null;
+            try {
+                obj = parser.parse(new FileReader(path));
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            JSONObject jsonObject = (JSONObject) obj;
+            return jsonObject;
+        }
+
 
 
     public void makeFunctions(){
@@ -127,7 +164,6 @@ public class FunctionParser {
             System.out.println("Podaj funkcje nr "+ (i+1));
              answer=scanner.next();
             limitations.add(makeFunction(answer));
-            saveFunctionsToFile("functions",answer);
 
         }
         System.out.println("Podaj funckje optymalizująca");
@@ -139,14 +175,7 @@ public class FunctionParser {
 
     }
 
-    private void saveFunctionsToFile(String path,String function){
-        try {
-            FileWriter file = new FileWriter(path);
-            file.write(function+"\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
     private Expression makeFunction(String exp){
         ExpressionBuilder builder= new ExpressionBuilder(exp);
         builder.variables(variabes);
@@ -160,12 +189,13 @@ public class FunctionParser {
 
     }
 
+
     public void setOptimization(String optimization) {
         this.optimization = optimization;
     }
-    public void makeLimitations(String [] limitations){
-        for (int i = 0; i <limitations.length ; i++) {
-            this.limitations.add(makeFunction(limitations[i]));
+    public void makeLimitations(List<String> limitations){
+        for (int i = 0; i <limitations.size() ; i++) {
+            this.limitations.add(makeFunction(limitations.get(i)));
         }
     }
 
@@ -173,7 +203,7 @@ public class FunctionParser {
         this.optimizationFunction = makeFunction(opt);
     }
 
-    public void setVariables(LinkedList<String> variables) {
+    public void setVariables(List variables) {
        this.variabes.addAll(variables);
     }
 

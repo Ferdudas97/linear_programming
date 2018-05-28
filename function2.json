@@ -1,0 +1,6 @@
+{
+  "variables":["z","x","c","v"],
+  "limitations":["z+2x+1.5c+6v<=90000","2z+2x+1.5c+4v<=120000","z>=0","x>=0","c>=0","v>=0"],
+  "function":"4z+6x+3c+12",
+  "optimization":"max"
+}

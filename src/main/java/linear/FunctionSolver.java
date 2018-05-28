@@ -57,7 +57,7 @@ public class FunctionSolver<T> {
         Double point;
         int iterator=0;
         double randomed;
-        if (radius<100) radius=9.99;
+        if (radius<50) radius=9.99;
         previousOptimalValue=optimalValue;
         for (int j = 0; j < numberOfPoints; j++) {
             iterator=0;
